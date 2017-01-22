@@ -51,6 +51,8 @@
                 <div class="form-group">
                     <label >Alarm Time [On the hour]</label>
                     <input  type="range" min="0" max="24" step="1" name="hour"/>
+                    <output for="hour" onforminput="value = hour.valueAsNumber;"></output>
+
                 </div>
                 <button type="submit" class="btn btn-theme">Submit</button>
             </form>
