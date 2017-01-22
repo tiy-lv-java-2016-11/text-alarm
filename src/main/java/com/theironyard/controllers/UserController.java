@@ -16,7 +16,9 @@ import javax.servlet.http.HttpSession;
 @Controller
 public class UserController {
     public static final String SESSION_USERNAME = "currentUsername";
-
+    /* *
+     *
+     * */
     @Autowired
     UserRepository userRepo;
 
@@ -30,6 +32,10 @@ public class UserController {
         return "register";
     }
 
+    /* *
+     * Receives  and verifies "username" and "password" from login form, saves "username" to session,
+     * If payment has been set, redirects to "alarm", otherwise redirects to "payment"
+     * */
     @RequestMapping(path = "/login", method = RequestMethod.POST)
     public String postLogin(LoginCommand command, HttpSession session, RedirectAttributes redAtt) throws PasswordStorage.InvalidHashException, PasswordStorage.CannotPerformOperationException {
         User user = userRepo.findFirstByUsername(command.getUsername());
@@ -45,6 +51,10 @@ public class UserController {
         return "redirect:/alarm";
     }
 
+    /* *
+     * Receives "user" attributes from register form, if "username" is not taken,
+     * creates "user" object and saves to user repo, then redirects to "payment" page
+     * */
     @RequestMapping(path = "/register", method = RequestMethod.POST)
     public String createUser(RegisterCommand command, HttpSession session, RedirectAttributes redAtt) throws PasswordStorage.CannotPerformOperationException {
         User user = userRepo.findFirstByUsername(command.getUsername());
@@ -58,6 +68,4 @@ public class UserController {
         session.setAttribute(SESSION_USERNAME, user.getUsername());
         return "redirect:/payment";
     }
-
-
 }

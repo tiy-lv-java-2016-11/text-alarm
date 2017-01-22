@@ -3,6 +3,7 @@ package com.theironyard.controllers;
 import com.theironyard.entities.User;
 import com.theironyard.repositories.UserRepository;
 import com.theironyard.services.StripeService;
+import com.theironyard.services.TwilioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +20,9 @@ public class TextAlarmController {
 
     @Autowired
     StripeService stripe;
+
+    @Autowired
+    TwilioService twilio;
 
     @RequestMapping(path = "/", method = RequestMethod.GET)
     public String getHome(HttpSession session){
@@ -52,11 +56,15 @@ public class TextAlarmController {
         return "alarm";
     }
 
+    /* *
+     * Receives "token" generated Stripe Api, and submits a "charge" to Stripe,
+     * if payment is successful, redirects to "alarm" page
+     * */
     @RequestMapping(path = "/payment", method =RequestMethod.POST)
     public String submitPayment(HttpSession session, String token, RedirectAttributes redAtt){
         User user = userRepo.findFirstByUsername((String) session.getAttribute(UserController.SESSION_USERNAME));
         if (user == null){
-            return "index";
+            return "redirect:/index";
         }
 
         String chargeId = stripe.chargeCard(token, 1999);
@@ -68,9 +76,19 @@ public class TextAlarmController {
         return "redirect:/alarm";
     }
 
+    /* *
+     * Receives "hour" from alarm form and sets the current users alarmTime to "hour"
+     * */
     @RequestMapping(path = "/alarm", method = RequestMethod.POST)
-    public String setAlarm(){
-
+    public String setAlarm(HttpSession session, int hour, RedirectAttributes redAtt){
+        User user = userRepo.findFirstByUsername((String) session.getAttribute(UserController.SESSION_USERNAME));
+        if (user == null){
+            return "redirect:/index";
+        }
+        user.setAlarmTime(hour);
+        userRepo.save(user);
+        String message = String.format("Your alarm has been set for the %d00 hour", hour);
+        redAtt.addFlashAttribute("message", message);
         return "redirect:/alarm";
     }
 }
