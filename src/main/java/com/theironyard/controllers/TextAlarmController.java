@@ -4,6 +4,7 @@ import com.theironyard.entities.User;
 import com.theironyard.repositories.UserRepository;
 import com.theironyard.services.StripeService;
 import com.theironyard.services.TwilioService;
+import com.twilio.Twilio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,10 +32,10 @@ public class TextAlarmController {
             return "index";
         }
         if (user.getChargeId() == null){
-            return "redirect:/payment";
+            return "payment";
         }
         else {
-            return "redirect:/alarm";
+            return "alarm";
         }
     }
 
@@ -61,19 +62,19 @@ public class TextAlarmController {
      * if payment is successful, redirects to "alarm" page
      * */
     @RequestMapping(path = "/payment", method =RequestMethod.POST)
-    public String submitPayment(HttpSession session, String token, RedirectAttributes redAtt){
+    public String submitPayment(HttpSession session, String stripeToken, RedirectAttributes redAtt){
         User user = userRepo.findFirstByUsername((String) session.getAttribute(UserController.SESSION_USERNAME));
         if (user == null){
             return "redirect:/index";
         }
 
-        String chargeId = stripe.chargeCard(token, 1999);
+        String chargeId = stripe.chargeCard(stripeToken, 1999);
         user.setChargeId(chargeId);
         String message = "Payment Successful";
         redAtt.addFlashAttribute("message", message);
         userRepo.save(user);
 
-        return "redirect:/alarm";
+        return "redirect:/";
     }
 
     /* *

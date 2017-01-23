@@ -49,7 +49,7 @@ public class TwilioService {
     /* *
      * Sends a SMS message to the input phone number using the Twilio library
      * */
-    private String sendSMS(String phone){
+    public String sendSMS(String phone){
 
         Message message = Message.creator(
                 new PhoneNumber(phone),  // To number
