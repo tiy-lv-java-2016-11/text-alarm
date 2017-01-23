@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+</head>
+<body>
+<h1>Hello, {{username}}</h1>
+<form action="/logout" method="post">
+    <button type="submit">logout</button>
+</form>
+
+<img src="/images/dumb-products-list.jpg"/>
+<form action="/" method="POST">
+    <script
+            src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+            data-key="pk_test_0wLcHkZRTmWBpHTgKECWNdin"
+            data-amount="2000"
+            data-name="Demo Site"
+            data-description="head remote"
+            data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
+            data-locale="auto"
+            data-zip-code="true">
+    </script>
+</form>
+
+</body>
+</html>
