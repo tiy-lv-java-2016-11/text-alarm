@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {{> head}}
+</head>
+
+<body>
+
+<!-- Fixed navbar -->
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="index.html">Text Alarm.</a>
+        </div>
+        <div class="navbar-collapse collapse navbar-right">
+            <ul class="nav navbar-nav">
+                <li><a href="/payment">Set Payment</a></li>
+                <li><a href="/alarm">Set Alarm</a></li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div>
+</div>
+<!-- *****************************************************************************************************************
+ BLUE WRAP
+ ***************************************************************************************************************** -->
+<div id="blue">
+    <div class="container">
+        <div class="row">
+            <h3>Set Payment.</h3>
+        </div><!-- /row -->
+    </div> <!-- /container -->
+</div><!-- /blue -->
+
+<!-- *****************************************************************************************************************
+ CONTACT WRAP
+ ***************************************************************************************************************** -->
+
+<div class="container centered">
+    <div class="row">
+        <div class="col-lg-8 col-lg-offset-2">
+            <h4>Set your payment for Text Alarm!</h4>
+            <div class="hline"></div>
+            <form id="payment-form" role="form" action="/payment" method="post">
+                <span class="payment-errors"></span>
+                <div class="form-group">
+                    <label >Credit Card Number</label>
+                    <input type="text" class="form-control" size="20" data-stripe="number" required>
+                </div>
+                <div class="form-group">
+                    <label >Expiration</label>
+                    <input type="text" class="form-control" placeholder="MM / YY" data-stripe="exp" required>
+                </div>
+                <div class="form-group">
+                    <label >CVC Code</label>
+                    <input type="text" class="form-control" data-stripe="cvc" required>
+                </div>
+                <div class="form-group">
+                    <label >Zip Code</label>
+                    <input type="text" class="form-control" data-stripe="address_zip" required>
+                </div>
+                <button type="submit" class="btn btn-theme submit">Submit</button>
+            </form>
+        </div>
+    </div><! --/row -->
+</div><! --/container -->
+
+{{> footer}}
+
+//JS for Stripe Api
+<script type="text/javascript">
+    Stripe.setPublishableKey('pk_test_BmpDr2ZJvgebg8FTKaeaXP93');
+    $(function() {
+        var $form = $('#payment-form');
+        $form.submit(function(event) {
+            // Disable the submit button to prevent repeated clicks:
+            $form.find('.submit').prop('disabled', true);
+            // Request a token from Stripe:
+            Stripe.card.createToken($form, stripeResponseHandler);
+            // Prevent the form from being submitted:
+            return false;
+        });
+    });
+    function stripeResponseHandler(status, response) {
+
+        // Grab the form:
+        var $form = $('#payment-form');
+
+        if (response.error) { // Problem!
+
+            // Show the errors on the form
+            $form.find('.payment-errors').text(response.error.message);
+            $form.find('button').prop('disabled', false); // Re-enable submission
+
+        } else { // Token was created!
+
+            // Get the token ID:
+            var token = response.id;
+            // Insert the token into the form so it gets submitted to the server:
+            $form.append($('<input type="hidden" name="stripeToken" />').val(token));
+
+            // Submit the form:
+            $form.get(0).submit();
+
+        }
+    }
+</script>
+
+</body>
+</html>
